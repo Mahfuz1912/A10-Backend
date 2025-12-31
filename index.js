@@ -82,24 +82,29 @@ async function run() {
     /* ================= WATCH LIST ================= */
 
     // ➕ Add to WatchList
-    app.post("/watchlist", async (req, res) => {
-      const watchListData = req.body;
+app.post("/watchlist", async (req, res) => {
+  const watchListData = req.body;
 
-      // duplicate prevent (same review + same user)
-      const exists = await watchListCollection.findOne({
-        reviewId: watchListData.reviewId,
-        addWatchListReviewerEmail: watchListData.addWatchListReviewerEmail,
-      });
+  // 1. Basic Validation: Ensure required names are present
+  if (!watchListData.reviewerName) {
+    return res.status(400).send({ message: "Original reviewer name is missing" });
+  }
 
-      if (exists) {
-        return res.status(409).send({ message: "Already added to watchlist" });
-      }
+  // 2. Duplicate prevention
+  const exists = await watchListCollection.findOne({
+    reviewId: watchListData.reviewId,
+    addWatchListReviewerEmail: watchListData.addWatchListReviewerEmail,
+  });
 
-      watchListData.addedAt = new Date();
+  if (exists) {
+    return res.status(409).send({ message: "Already added to watchlist" });
+  }
 
-      const result = await watchListCollection.insertOne(watchListData);
-      res.send(result);
-    });
+  watchListData.addedAt = new Date();
+
+  const result = await watchListCollection.insertOne(watchListData);
+  res.send(result);
+});
 
     // 📥 Get WatchList (email wise optional)
     app.get("/watchlist", async (req, res) => {
