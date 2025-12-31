@@ -9,6 +9,8 @@ app.use(cors());
 app.use(express.json());
 
 const uri = "mongodb+srv://GameReview:gamereview@cluster0.uf9fl2q.mongodb.net/?appName=Cluster0";
+
+// const uri = "mongodb://localhost:27017";
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -29,8 +31,14 @@ async function run() {
 
     app.post("/addReview", async (req, res) => {
       const review = req.body;
-      const result = await gameReviewCollection.insertOne(review);
-      res.send(result);
+      // Check if the incoming data is an array
+      if (Array.isArray(review)) {
+        const result = await gameReviewCollection.insertMany(review);
+        res.send(result);
+      } else {
+        const result = await gameReviewCollection.insertOne(review);
+        res.send(result);
+      }
     });
 
     app.get("/reviews", async (req, res) => {
@@ -130,4 +138,3 @@ app.listen(PORT, () => {
 app.get("/", (req, res) => {
   res.send("🚀 Game Review Server Running");
 });
-
