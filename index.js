@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const uri = "mongodb://localhost:27017";
+const uri = "mongodb+srv://GamerReview:gamerreview@cluster0.uf9fl2q.mongodb.net/?appName=Cluster0";
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
